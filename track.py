@@ -38,6 +38,11 @@ if str(ROOT) not in sys.path:
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 
+# --- crosswalk det start
+# List for all seen id's of detected crosswalks
+obj_id_hist = []
+# --- crosswalk det end
+
 def detect(opt):
     out, source, yolo_model, deep_sort_model, show_vid, save_vid, save_txt, imgsz, evaluate, half, \
         project, exist_ok, update, save_crop = \
@@ -213,6 +218,22 @@ def detect(opt):
                             if save_crop:
                                 txt_file_name = txt_file_name if (isinstance(path, list) and len(path) > 1) else ''
                                 save_one_box(bboxes, imc, file=save_dir / 'crops' / txt_file_name / names[c] / f'{id}' / f'{p.stem}.jpg', BGR=True)
+
+                        # --- crosswalk det start
+                        # If the id of the object is not present in id history list
+                        if id not in obj_id_hist:
+                            obj_id_hist.append(id)
+                            LOGGER.info("New crosswalk detected")
+
+                            # Play sound
+                            os.system('play --no-show-progress --null --channels 1 synth %s sine %f' %( 0.1, 400))
+                            # print("\a")
+
+                            # save results to file
+
+
+                        # --- crosswalk det end
+
 
                 LOGGER.info(f'{s}Done. YOLO:({t3 - t2:.3f}s), DeepSort:({t5 - t4:.3f}s)')
 
